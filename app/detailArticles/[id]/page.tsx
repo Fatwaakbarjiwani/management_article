@@ -1,4 +1,5 @@
 import ArticleCard, { Article } from "../../../components/ArticleCard";
+// import { Metadata } from "next";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -22,11 +23,12 @@ async function getOtherArticles(
   return data.data.filter((a: Article) => a.id !== currentId).slice(0, 3);
 }
 
-export default async function DetailArticlePage({
-  params,
-}: {
+interface PageProps {
   params: { id: string };
-}) {
+  searchParams?: { [key: string]: string | string[] | undefined };
+}
+
+export default async function DetailArticlePage({ params }: PageProps) {
   const article = await getArticle(params.id);
   const otherArticles = await getOtherArticles(article.category.id, params.id);
   return (
