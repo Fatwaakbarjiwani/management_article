@@ -23,12 +23,7 @@ async function getOtherArticles(
   return data.data.filter((a: Article) => a.id !== currentId).slice(0, 3);
 }
 
-interface PageProps {
-  params: { id: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
-}
-
-export default async function DetailArticlePage({ params }: PageProps) {
+export default async function Page({ params }: { params: { id: string } }) {
   const article = await getArticle(params.id);
   const otherArticles = await getOtherArticles(article.category.id, params.id);
   return (
