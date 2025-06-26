@@ -1,11 +1,13 @@
+// app/detailArticles/[id]/page.tsx
+
 import ArticleCard, { Article } from "../../../components/ArticleCard";
-// import { Metadata } from "next";
+import { notFound } from "next/navigation";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 async function getArticle(id: string): Promise<Article> {
   const res = await fetch(`${BASE_URL}/articles/${id}`, { cache: "no-store" });
-  if (!res.ok) throw new Error("Failed to fetch article");
+  if (!res.ok) return notFound(); // Return 404 if article not found
   return res.json();
 }
 
@@ -19,13 +21,13 @@ async function getOtherArticles(
   );
   if (!res.ok) return [];
   const data = await res.json();
-  // Filter out the current article and take 3 others
   return data.data.filter((a: Article) => a.id !== currentId).slice(0, 3);
 }
 
 export default async function Page({ params }: { params: { id: string } }) {
   const article = await getArticle(params.id);
   const otherArticles = await getOtherArticles(article.category.id, params.id);
+
   return (
     <div className="max-w-3xl mt-20 md:max-w-6xl mx-auto py-6 px-2 sm:px-4 md:px-8 font-archivo">
       <div className="text-center mb-2 text-xs text-gray-500">
@@ -46,7 +48,6 @@ export default async function Page({ params }: { params: { id: string } }) {
         className="prose prose-sm sm:prose lg:prose-lg mx-auto text-justify break-words"
         dangerouslySetInnerHTML={{ __html: article.content }}
       />
-      {/* Other Articles Section */}
       {otherArticles.length > 0 && (
         <div className="mt-12 sm:mt-16">
           <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6">
