@@ -1,13 +1,15 @@
 // app/detailArticles/[id]/page.tsx
 
-import { notFound } from "next/navigation";
 import ArticleCard, { Article } from "../../../components/ArticleCard";
+import { notFound } from "next/navigation";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 async function getArticle(id: string): Promise<Article> {
   const res = await fetch(`${BASE_URL}/articles/${id}`, { cache: "no-store" });
-  if (!res.ok) return notFound();
+  if (!res.ok) {
+    notFound();
+  }
   return res.json();
 }
 
