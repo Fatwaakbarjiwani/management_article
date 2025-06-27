@@ -19,13 +19,14 @@ export default function ListArticles({
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const Base_Url = process.env.NEXT_PUBLIC_BASE_URL;
 
   useEffect(() => {
     const fetchArticles = async () => {
       setLoading(true);
       setError("");
       try {
-        let url = `https://test-fe.mysellerpintar.com/api/articles?page=${page}&limit=${limit}`;
+        let url = `${Base_Url}/articles?page=${page}&limit=${limit}`;
         if (categoryId) url += `&category=${categoryId}`;
         if (search) url += `&title=${encodeURIComponent(search)}`;
         const res = await fetch(url);
@@ -71,7 +72,6 @@ export default function ListArticles({
           ))
         )}
       </div>
-      {/* Pagination */}
       <div className="flex justify-center items-center gap-2 mt-8">
         <button
           onClick={() => setPage((p) => Math.max(1, p - 1))}

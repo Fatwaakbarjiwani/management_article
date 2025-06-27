@@ -9,59 +9,41 @@ export default function Navbar() {
   const pathname = usePathname();
   const [navbar, setNavbar] = useState<string>("mode1");
   const [isScrolled, setIsScrolled] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<{ username?: string; role?: string }>({});
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (pathname === "/logins" || pathname === "/registers") {
-      // Do not redirect or fetch user on login/register page
-      return;
-    }
-    setToken(
-      typeof window !== "undefined" ? localStorage.getItem("token") : null
-    );
-  }, [pathname]);
-
-  useEffect(() => {
-    if (pathname === "/logins" || pathname === "/registers") {
-      // Do not fetch user or redirect on login/register page
-      return;
-    }
     const getMe = async () => {
-      if (token && typeof token === "string") {
-        try {
-          const headers: Record<string, string> = {
-            Authorization: `Bearer ${token}`,
-          };
-          const response = await fetch(`${BASE_URL}/auth/profile`, {
-            headers,
-          });
-          if (!response.ok) {
-            throw new Error("Failed to fetch user data");
-          }
-          const data = await response.json();
-          setUser(data);
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-          Swal.fire({
-            title: "Error",
-            text: "Failed to fetch user data. Please log in again.",
-            icon: "error",
-          }).finally(() => {
-            localStorage.removeItem("token");
-            if (pathname !== "/logins" && pathname !== "/registers") {
-              router.push("/logins");
-            }
-          });
+      try {
+        const token = localStorage.getItem("token");
+        const headers: Record<string, string> = {
+          Authorization: `Bearer ${token}`,
+        };
+        const response = await fetch(`${BASE_URL}/auth/profile`, {
+          headers,
+        });
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
         }
+        const data = await response.json();
+        setUser(data);
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text: "Failed to fetch user data. Please log in again.",
+          icon: "error",
+        }).finally(() => {
+          localStorage.removeItem("token");
+          if (pathname !== "/logins" && pathname !== "/registers") {
+            router.push("/logins");
+          }
+        });
+        return error;
       }
     };
-    if (token !== null) {
-      getMe();
-    }
-  }, [token, BASE_URL, router, pathname]);
+    getMe();
+  }, [BASE_URL, router, pathname]);
 
   useEffect(() => {
     if (pathname.startsWith("/detailArticles/") || pathname === "/account") {
