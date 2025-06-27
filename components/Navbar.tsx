@@ -29,16 +29,20 @@ export default function Navbar() {
         const data = await response.json();
         setUser(data);
       } catch (error) {
-        Swal.fire({
-          title: "Error",
-          text: "Failed to fetch user data. Please log in again.",
-          icon: "error",
-        }).finally(() => {
-          localStorage.removeItem("token");
-          if (pathname !== "/logins" && pathname !== "/registers") {
+        if (
+          pathname !== "/logins" &&
+          pathname !== "/registers" &&
+          !pathname.startsWith("/detailArticles/")
+        ) {
+          Swal.fire({
+            title: "Error",
+            text: "Failed to fetch user data. Please log in again.",
+            icon: "error",
+          }).finally(() => {
+            localStorage.removeItem("token");
             router.push("/logins");
-          }
-        });
+          });
+        }
         return error;
       }
     };
