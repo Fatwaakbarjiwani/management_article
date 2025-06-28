@@ -16,7 +16,6 @@ export default function Page() {
   const [username, setUsername] = useState<string>("");
   const [otherArticles, setOtherArticles] = useState<Article[]>([]);
 
-  // Fetch article detail
   useEffect(() => {
     const fetchArticle = async () => {
       try {
@@ -42,7 +41,6 @@ export default function Page() {
     fetchArticle();
   }, [params.id]);
 
-  // Fetch other articles in the same category
   const fetchOtherArticles = async (categoryId: string, currentId: string) => {
     try {
       const res = await axios.get(
